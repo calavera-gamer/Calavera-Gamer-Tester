@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calavera Gamer</title>
+  <style>
+    body {
+      margin: 0;
+      background: #0d1117;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    header img {
+      height: 50px;
+    }
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+    }
+    canvas {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 12px;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Calavera Gamer Logo">
+    <h1>Calavera Gamer</h1>
+  </header>
+  <canvas id="gamepadCanvas" width="400" height="300"></canvas>
+  <div class="status" id="status">Conecta un mando para comenzar...</div>
+
+  <script>
+    const canvas = document.getElementById('gamepadCanvas');
+    const ctx = canvas.getContext('2d');
+    const status = document.getElementById('status');
+
+    function drawGamepad(gamepad) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+
+      // Sticks (azul - PlayStation)
+      ctx.fillStyle = '#0070f3';
+      ctx.beginPath();
+      ctx.arc(100, 150, 20, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(300, 150, 20, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ABXY (rojo - Nintendo)
+      ctx.fillStyle = '#ff3b30';
+      ctx.fillRect(320, 80, 15, 15); // Y
+      ctx.fillRect(340, 100, 15, 15); // B
+      ctx.fillRect(320, 120, 15, 15); // A
+      ctx.fillRect(300, 100, 15, 15); // X
+
+      // D-Pad (verde - Xbox)
+      ctx.fillStyle = '#28c840';
+      ctx.fillRect(80, 100, 15, 15); // left
+      ctx.fillRect(100, 80, 15, 15); // up
+      ctx.fillRect(120, 100, 15, 15); // right
+      ctx.fillRect(100, 120, 15, 15); // down
+
+      // LT/RT
+      ctx.fillStyle = '#aaa';
+      ctx.fillRect(60, 30, 40, 10); // LT
+      ctx.fillRect(300, 30, 40, 10); // RT
+
+      // Text info
+      status.textContent = `Mando detectado: ${gamepad.id}`;
+    }
+
+    function update() {
+      const gamepads = navigator.getGamepads();
+      const gp = gamepads[0];
+      if (gp) drawGamepad(gp);
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener("gamepadconnected", (e) => {
+      status.textContent = `Mando conectado: ${e.gamepad.id}`;
+      requestAnimationFrame(update);
+    });
+
+    window.addEventListener("gamepaddisconnected", () => {
+      status.textContent = "Mando desconectado.";
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  </script>
+</body>
+</html>
